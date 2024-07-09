@@ -319,3 +319,7 @@ All images in this folder are licensed under the [GNU General Public License ver
 
 ## CubesterYT/KeySimulation.svg
  - Created by [@SharkPool-SP](https://github.com/SharkPool-SP/)
+
+## Mrk20200/cssInject.svg
+ - Created by [@Mrk20200](https://scratch.mit.edu/users/Mrk20200/)
+ - CSS3 Logo based on the version from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:CSS3_logo_and_wordmark.svg) under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/deed.en).
