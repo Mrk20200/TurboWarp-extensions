@@ -144,9 +144,9 @@
           },
           "---",
           {
-            opcode: "getViewportSize",
+            opcode: "getScreenSize",
             blockType: BlockType.REPORTER,
-            text: Scratch.translate("viewport [LENGTH]"),
+            text: Scratch.translate("screen [LENGTH]"),
             disableMonitor: true,
             arguments: {
               LENGTH: {
@@ -156,9 +156,9 @@
             },
           },
           {
-            opcode: "getScreenSize",
+            opcode: "getViewportSize",
             blockType: BlockType.REPORTER,
-            text: Scratch.translate("screen [LENGTH]"),
+            text: Scratch.translate("viewport [LENGTH]"),
             disableMonitor: true,
             arguments: {
               LENGTH: {
@@ -176,7 +176,7 @@
         ],
         menus: {
           length: {
-            acceptReporters: false,
+            acceptReporters: true,
             items: [
               {
                 text: Scratch.translate("width"),
@@ -189,7 +189,7 @@
             ],
           },
           presetQueries: {
-            acceptReporters: false,
+            acceptReporters: true,
             items: [
               {
                 text: Scratch.translate("stage canvas"),
@@ -302,14 +302,14 @@
     }
 
     // Information-related functions
-    getViewportSize(args) {
-      return args.LENGTH == "width" ? window.innerWidth : window.innerHeight;
-    }
-
     getScreenSize(args) {
       return args.LENGTH == "width"
         ? window.screen.width
         : window.screen.height;
+    }
+
+    getViewportSize(args) {
+      return args.LENGTH == "width" ? window.innerWidth : window.innerHeight;
     }
 
     // Included because CSS rules change between non-packaged and packaged interfaces
