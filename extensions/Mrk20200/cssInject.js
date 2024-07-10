@@ -285,7 +285,13 @@
     // Query-related functions
     replaceStyleByQuery(args) {
       let castedCSS = Cast.toString(args.CSS);
-      let targetElement = document.querySelector(Cast.toString(args.QUERY));
+      let targetElement;
+      try {
+        targetElement = document.querySelector(Cast.toString(args.QUERY));
+      } catch (error) {
+        console.error(error);
+        return;
+      }
       if (this.detectRemoteURLs(castedCSS)) {
         if (targetElement) {
           targetElement["style"] = castedCSS;
@@ -296,7 +302,13 @@
 
     replaceAllStylesByQuery(args) {
       let castedCSS = Cast.toString(args.CSS);
-      let targetElements = document.querySelectorAll(Cast.toString(args.QUERY));
+      let targetElements;
+      try {
+        targetElements = document.querySelectorAll(Cast.toString(args.QUERY));
+      } catch (error) {
+        console.error(error);
+        return;
+      }
       if (this.detectRemoteURLs(castedCSS)) {
         targetElements.forEach((element) => {
           element["style"] = castedCSS;
@@ -310,7 +322,14 @@
     }
 
     getQueryStyle(args) {
-      let targetElement = document.querySelector(Cast.toString(args.QUERY));
+      let targetElement;
+      try {
+        targetElement = document.querySelector(Cast.toString(args.QUERY));
+      } catch (error) {
+        console.error(error);
+        return "not found";
+      }
+
       if (targetElement) {
         return targetElement["style"].cssText;
       } else {
@@ -319,7 +338,12 @@
     }
 
     checkQuery(args) {
-      return document.querySelector(Cast.toString(args.QUERY)) !== null;
+      try {
+        return document.querySelector(Cast.toString(args.QUERY)) !== null;
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
     }
 
     // Information-related functions
