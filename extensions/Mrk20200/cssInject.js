@@ -12,7 +12,7 @@
   }
 
   let replaceableStyle;
-  const isPackaged = (typeof scaffolding !== "undefined");
+  const isPackaged = typeof scaffolding !== "undefined";
   const URLregexp = /url\((?:'|")?(.*?)(?:'|")?\)/g; // matches with url("...")
   const presetQueries = {
     stageCanvas: isPackaged
