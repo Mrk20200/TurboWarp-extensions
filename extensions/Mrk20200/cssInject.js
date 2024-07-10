@@ -13,7 +13,8 @@
 
   let replaceableStyle;
   const isPackaged = typeof scaffolding !== "undefined";
-  const URLregexp = /url\((?:'|")?(.*?)(?:'|")?\)/g; // matches with url("...")
+  const URLregexp = /url\(['"]?(.*?)['"]?\)/gi; // matches with url(...)
+  // The presets below have to be maintained with major updates
   const presetQueries = {
     stageCanvas: isPackaged
       ? "canvas.sc-canvas"
@@ -47,7 +48,7 @@
    * stagePrompt: The element with all of the outer padding and outer margin
    * controlsHeader: Parent of the parent of the green flag button (not a typo!)
    * contentArea: (should only be used for fullscreen effects, rotations, or positioning)
-   * scratchblocks: The body of the blocks
+   * scratchblocks: The element that has the background color of the blocks
    */
 
   const Cast = Scratch.Cast;
