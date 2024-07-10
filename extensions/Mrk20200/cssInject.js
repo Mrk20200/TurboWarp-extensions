@@ -12,7 +12,7 @@
   }
 
   let replaceableStyle;
-  const isPackaged = typeof scaffolding !== "undefined";
+  const isPackaged = (typeof scaffolding !== "undefined");
   const URLregexp = /url\((?:'|")?(.*?)(?:'|")?\)/g; // matches with url("...")
   const presetQueries = {
     stageCanvas: isPackaged
@@ -20,7 +20,7 @@
       : 'div[class^="stage_stage_"] > div > canvas',
     stageMonitors: isPackaged
       ? "div.sc-monitor-root"
-      : 'div[class^="monitor_monitor-container_"] > div',
+      : 'div[class^="monitor_monitor-container_"]',
     stagePrompt: isPackaged
       ? "div.sc-question-inner"
       : 'div[class^="question_question-container_"]',
@@ -43,7 +43,7 @@
 
   /**
    * (NOTE: only the more complicated selectors will be documented)
-   * stageMonitors: The parent of the element with the outer padding
+   * stageMonitors: The element that has the background of variable monitors
    * stagePrompt: The element with all of the outer padding and outer margin
    * controlsHeader: Parent of the parent of the green flag button (not a typo!)
    * contentArea: (should only be used for fullscreen effects, rotations, or positioning)
@@ -132,6 +132,17 @@
             },
           },
           {
+            opcode: "getQueryStyle",
+            blockType: BlockType.REPORTER,
+            text: Scratch.translate("inline style of selector [QUERY]"),
+            disableMonitor: true,
+            arguments: {
+              QUERY: {
+                type: ArgumentType.STRING,
+              },
+            },
+          },
+          {
             opcode: "checkQuery",
             blockType: BlockType.BOOLEAN,
             text: Scratch.translate("selector [QUERY] matches element?"),
@@ -196,7 +207,7 @@
                 value: "stageCanvas",
               },
               {
-                text: Scratch.translate("variable/list monitors"),
+                text: Scratch.translate("all variable/list monitors"),
                 value: "stageMonitors",
               },
               {
@@ -295,6 +306,15 @@
 
     getPresetQuery(args) {
       return presetQueries[args.PRESET];
+    }
+
+    getQueryStyle(args) {
+      let targetElement = document.querySelector(Cast.toString(args.QUERY));
+      if (targetElement) {
+        return targetElement["style"].cssText;
+      } else {
+        return "not found";
+      }
     }
 
     checkQuery(args) {
