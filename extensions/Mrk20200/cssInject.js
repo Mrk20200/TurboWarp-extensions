@@ -13,7 +13,7 @@
 
   let replaceableStyle;
   const isPackaged = typeof scaffolding !== "undefined";
-  const URLregexp = /url\(['"]?(.*?)['"]?\)/gi; // matches with url(...)
+  const urlRegExp = /url\(['"]?(.*?)['"]?\)/gi; // matches with url(...)
   // The presets below have to be maintained with major updates
   const presetQueries = {
     stageCanvas: isPackaged
@@ -94,7 +94,7 @@
             opcode: "replaceStyleByQuery",
             blockType: BlockType.COMMAND,
             text: Scratch.translate(
-              "replace style of CSS selector [QUERY] with [CSS]"
+              "replace inline style of selector [QUERY] with [CSS]"
             ),
             arguments: {
               CSS: {
@@ -109,7 +109,7 @@
             opcode: "replaceAllStylesByQuery",
             blockType: BlockType.COMMAND,
             text: Scratch.translate(
-              "replace all styles of CSS selector [QUERY] with [CSS]"
+              "replace all inline styles of selector [QUERY] with [CSS]"
             ),
             arguments: {
               CSS: {
@@ -183,7 +183,6 @@
             opcode: "checkIfPackaged",
             blockType: BlockType.BOOLEAN,
             text: Scratch.translate("is packaged?"),
-            disableMonitor: true,
           },
         ],
         menus: {
@@ -365,7 +364,7 @@
     // Blocks remote URLs, allows offline data URIs
     // The URLs are blocked before injection because the requests are handled by the browser
     detectRemoteURLs(css) {
-      for (const match of css.matchAll(URLregexp)) {
+      for (const match of css.matchAll(urlRegExp)) {
         let url;
         try {
           url = new URL(match[1], location.href);
