@@ -12,9 +12,11 @@
   }
 
   let replaceableStyle;
+  let disposeClass = "injectCSS_style";
+  let inlineStylesChanged = false;
   const isPackaged = typeof scaffolding !== "undefined";
   const urlRegExp = /url\(['"]?(.*?)['"]?\)/gi; // matches with url(...)
-  // The presets below have to be maintained with major updates
+  // The presets below have to be maintained with major updates (or if CSS classes change)
   const presetQueries = {
     stageCanvas: isPackaged
       ? "canvas.sc-canvas"
@@ -120,6 +122,7 @@
               },
             },
           },
+          "---",
           {
             opcode: "getPresetQuery",
             blockType: BlockType.REPORTER,
@@ -254,6 +257,7 @@
       if (this.detectRemoteURLs(castedCSS)) {
         let styleElement = document.createElement("style");
         styleElement.innerText = Cast.toString(castedCSS);
+        styleElement.classList.add(disposeClass);
         document.head.appendChild(styleElement);
       }
       return;
@@ -270,6 +274,7 @@
         } else {
           replaceableStyle = document.createElement("style");
           replaceableStyle.id = "_replaceableStyle";
+          replaceableStyle.classList.add(disposeClass);
           replaceableStyle.textContent = castedCSS;
           document.head.appendChild(replaceableStyle);
         }
@@ -293,6 +298,7 @@
       }
       if (this.detectRemoteURLs(castedCSS)) {
         if (targetElement) {
+          inlineStylesChanged = true;
           targetElement["style"] = castedCSS;
         }
       }
@@ -309,9 +315,12 @@
         return;
       }
       if (this.detectRemoteURLs(castedCSS)) {
-        targetElements.forEach((element) => {
-          element["style"] = castedCSS;
-        });
+        if (targetElements) {
+          inlineStylesChanged = true;
+          targetElements.forEach((element) => {
+            element["style"] = castedCSS;
+          });
+        }
       }
       return;
     }
@@ -384,6 +393,24 @@
       return true;
     }
   }
+
+  // Remove all styles when new project is loaded
+  Scratch.vm.runtime.on("PROJECT_CHANGED", () => {
+    console.log("New project loaded; removing injected style elements");
+    let toBeRemoved = document.querySelectorAll("style." + disposeClass);
+    toBeRemoved.forEach((element) => {
+      element.remove();
+    });
+
+    if (inlineStylesChanged) {
+      // Inline style changes can't be automatically reverted
+      alert(
+        "Message from CSS Inject extension:\nSome styles from the previously loaded project may still be loaded. If you want to revert them, reload the page."
+      );
+      inlineStylesChanged = false;
+    }
+  });
+
   // VSCode seems to not like the below line on every extension, so it is set to be ignored.
   // @ts-ignore
   Scratch.extensions.register(new cssInject());
