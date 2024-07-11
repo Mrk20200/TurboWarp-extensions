@@ -12,8 +12,9 @@
   }
 
   let replaceableStyle;
-  let disposeClass = "injectCSS_style";
   let inlineStylesChanged = false;
+
+  const disposeClass = "injectCSS_style";
   const isPackaged = typeof scaffolding !== "undefined";
   const urlRegExp = /url\(['"]?(.*?)['"]?\)/gi; // matches with url(...)
   // The presets below have to be maintained with major updates (or if CSS classes change)
@@ -66,6 +67,11 @@
         color2: "#264DE4",
         color3: "#264DE4",
         blocks: [
+          {
+            blockType: BlockType.BUTTON,
+            text: Scratch.translate("Revert style changes"),
+            func: "revertStyling",
+          },
           {
             opcode: "injectDocumentStyle",
             blockType: BlockType.COMMAND,
@@ -371,7 +377,6 @@
     }
 
     // Blocks remote URLs, allows offline data URIs
-    // The URLs are blocked before injection because the requests are handled by the browser
     detectRemoteURLs(css) {
       for (const match of css.matchAll(urlRegExp)) {
         let url;
@@ -383,7 +388,7 @@
 
         if (url.protocol !== "data:") {
           alert(
-            `Direct remote resources aren't supported in this extension. Please either use another extension to convert a costume into a data URI (such as Looks PLUS) or encode this resource into a data URI using an online converter.\n\nThe URL that triggered this message:\n${url.href} (at index ${match.index})`
+            `Message from CSS Injector extension:\nDirect remote resources aren't supported in this extension. Please either use another extension to convert a costume into a data URI (such as Looks PLUS) or encode this resource into a data URI using an online converter.\n\nThe URL that triggered this message:\n${url.href} (at index ${match.index})`
           );
           // stop injection
           return false;
@@ -392,26 +397,37 @@
       // proceed with injection
       return true;
     }
+
+    revertStyling(fromLoad = false) {
+      let toBeRemoved = document.querySelectorAll("style." + disposeClass);
+      toBeRemoved.forEach((element) => {
+        element.remove();
+      });
+
+      if (inlineStylesChanged) {
+        // Inline style changes can't be automatically reverted
+        if (fromLoad) {
+          alert(
+            "Message from CSS Injector extension:\nSome styles from the previously loaded project may still be loaded. If you want to revert them, reload the page."
+          );
+        } else {
+          alert(
+            'Message from CSS Injector extension:\nStyles set with the "inline style" blocks cannot be reverted automatically. If you want to revert those changes, save your project then reload the page.'
+          );
+        }
+        inlineStylesChanged = false;
+      }
+    }
   }
+
+  // Extension instance is seperated to allow calling from outside of class
+  let extensionInstance = new cssInject();
 
   // Remove all styles when new project is loaded
   Scratch.vm.runtime.on("PROJECT_LOADED", () => {
-    console.log("New project loaded; removing injected style elements");
-    let toBeRemoved = document.querySelectorAll("style." + disposeClass);
-    toBeRemoved.forEach((element) => {
-      element.remove();
-    });
-
-    if (inlineStylesChanged) {
-      // Inline style changes can't be automatically reverted
-      alert(
-        "Message from CSS Inject extension:\nSome styles from the previously loaded project may still be loaded. If you want to revert them, reload the page."
-      );
-      inlineStylesChanged = false;
-    }
+    extensionInstance.revertStyling(true);
   });
 
-  // VSCode seems to not like the below line on every extension, so it is set to be ignored.
-  // @ts-ignore
-  Scratch.extensions.register(new cssInject());
+  // @ts-expect-error
+  Scratch.extensions.register(extensionInstance);
 })(Scratch);
