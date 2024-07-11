@@ -395,7 +395,7 @@
   }
 
   // Remove all styles when new project is loaded
-  Scratch.vm.runtime.on("PROJECT_CHANGED", () => {
+  Scratch.vm.runtime.on("PROJECT_LOADED", () => {
     console.log("New project loaded; removing injected style elements");
     let toBeRemoved = document.querySelectorAll("style." + disposeClass);
     toBeRemoved.forEach((element) => {
