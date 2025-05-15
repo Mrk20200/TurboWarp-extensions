@@ -93,6 +93,11 @@
             },
           },
           {
+            opcode: "revertStylingWithoutWarning",
+            blockType: BlockType.COMMAND,
+            text: Scratch.translate("revert non-inline style changes"),
+          },
+          {
             opcode: "getReplaceableStyle",
             blockType: BlockType.REPORTER,
             text: Scratch.translate("replaceable style content"),
@@ -398,13 +403,20 @@
       return true;
     }
 
-    revertStyling(fromLoad = false) {
+    revertStylingWithoutWarning() {
+      this.revertStyling(true);
+    }
+
+    revertStyling(hideMessage = false, fromLoad = false) {
+      if (replaceableStyle) {
+        replaceableStyle.textContent = "";
+      }
       let toBeRemoved = document.querySelectorAll("style." + disposeClass);
       toBeRemoved.forEach((element) => {
         element.remove();
       });
 
-      if (inlineStylesChanged) {
+      if (inlineStylesChanged && !hideMessage) {
         // Inline style changes can't be automatically reverted
         if (fromLoad) {
           alert(
@@ -417,6 +429,7 @@
         }
         inlineStylesChanged = false;
       }
+      return;
     }
   }
 
@@ -425,7 +438,7 @@
 
   // Remove all styles when new project is loaded
   Scratch.vm.runtime.on("PROJECT_LOADED", () => {
-    extensionInstance.revertStyling(true);
+    extensionInstance.revertStyling(false, true);
   });
 
   // @ts-expect-error
